@@ -1,0 +1,101 @@
+substitutions:
+  default_log_level: WARN
+  max_log_level: DEBUG
+  default_syslog_server_ip: "192.168.0.15"
+  ntp_timezone: "America/Toronto"
+  ntp_server_1: "192.168.0.3"
+  ntp_server_2: "192.168.0.250"
+  ntp_server_3: "0.pool.ntp.org"
+  uart_logger_baud_rate: "0" # Disable UART logging by default
+
+logger:
+  id: id_logger
+  level: ${max_log_level}
+  initial_level: ${default_log_level}
+  baud_rate: ${uart_logger_baud_rate}
+
+ota:
+  - platform: esphome
+    id: id_ota
+
+api:
+  id: id_api
+
+mdns:
+  disabled: True
+
+udp:
+  - id: id_udp_syslog_server
+    addresses: ${default_syslog_server_ip}
+
+syslog:
+  id: id_syslog
+  udp_id: id_udp_syslog_server
+  time_id: id_sntp_time
+  port: 514
+  strip: true # remove color code
+  level: INFO
+
+time:
+  - platform: sntp
+    id: id_sntp_time
+    timezone: ${ntp_timezone}
+    servers:
+      - ${ntp_server_1}
+      - ${ntp_server_2}
+      - ${ntp_server_3}
+
+button:
+  - platform: restart
+    name: "Device Restart"
+    id: id_button_restart
+  - platform: safe_mode
+    name: "Device Restart (Safe Mode)"
+    id: id_button_safe_mode
+
+binary_sensor:
+  - platform: status
+    name: "Status"
+    id: id_bin_status
+
+sensor:
+  - platform: uptime
+    name: "Uptime Sensor"
+    id: id_sensor_uptime
+
+  - platform: wifi_signal
+    name: "WiFi Signal"
+    id: id_sensor_wifi_signal
+    entity_category: diagnostic
+    update_interval: 60s
+
+  - platform: template
+    name: "Wifi Channel"
+    id: id_sensor_wifi_channel
+    entity_category: diagnostic
+    accuracy_decimals: 0
+    lambda: "return WiFi.channel();"
+    update_interval: 60s
+
+text_sensor:
+  - platform: wifi_info
+    ssid:
+      name: "WiFi SSID"
+      id: id_text_wifi_ssid
+      entity_category: diagnostic
+    ip_address:
+      name: "IP Address"
+      id: id_text_ip_address
+      entity_category: diagnostic
+    mac_address:
+      name: "MAC Address"
+      id: id_text_mac_address
+      entity_category: diagnostic
+  - platform: template
+    name: "Wifi Channel"
+    id: id_sensor_wifi_channel
+    entity_category: diagnostic
+    icon: mdi:wifi-arrow-left-right
+    lambda: |-      
+      uint16_t channel = WiFi.channel();
+      return std::to_string(channel);
