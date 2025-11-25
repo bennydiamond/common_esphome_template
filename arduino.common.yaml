@@ -69,14 +69,6 @@ sensor:
     entity_category: diagnostic
     update_interval: 60s
 
-  - platform: template
-    name: "Wifi Channel"
-    id: id_sensor_wifi_channel
-    entity_category: diagnostic
-    accuracy_decimals: 0
-    lambda: "return WiFi.channel();"
-    update_interval: 60s
-
 text_sensor:
   - platform: wifi_info
     ssid:
