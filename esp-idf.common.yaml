@@ -1,12 +1,13 @@
 substitutions:
   default_log_level: WARN
   max_log_level: DEBUG
+  debug_toggle_switch_active_time_max: "24h"
+  uart_logger_baud_rate: "0" # Disable UART logging by default
   default_syslog_server_ip: "192.168.0.15"
   ntp_timezone: "America/Toronto"
   ntp_server_1: "192.168.0.3"
   ntp_server_2: "192.168.0.250"
   ntp_server_3: "0.pool.ntp.org"
-  uart_logger_baud_rate: "0" # Disable UART logging by default
   api_reboot_timeout: 15min
 
 logger:
@@ -94,3 +95,23 @@ text_sensor:
       #include "esphome/components/wifi/wifi_component.h"
       uint16_t channel = esphome::wifi::global_wifi_component->get_wifi_channel();
       return std::to_string(channel);
+
+switch:
+  - platform: template
+    name: "Debug Log Level Enabled"
+    id: id_switch_debug_logs_enabled
+    entity_category: config
+    restore_mode : ALWAYS_OFF
+    lambda: 'return id(id_logger).get_log_level() == ESPHOME_LOG_LEVEL_${max_log_level};'
+    turn_on_action:
+      - logger.set_level: ${max_log_level}
+      - logger.log:
+          level: INFO
+          format: "Debug logging enabled. Will revert to INFO in ${debug_toggle_switch_active_time_max} or on reboot."
+      - delay: ${debug_toggle_switch_active_time_max}
+      - switch.turn_off: id_switch_debug_logs_enabled
+    turn_off_action:
+      - logger.log:
+          level: INFO
+          format: "Debug logging disabled. Back to ${default_log_level} level."
+      - logger.set_level: ${default_log_level}
