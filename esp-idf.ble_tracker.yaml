@@ -1,0 +1,25 @@
+substitutions:
+  ble_tracker_software_coexistence: true # Default is true
+  ble_tracker_continous: false
+  ble_tracker_interval: 320ms
+  ble_tracker_window: 120ms
+  ble_tracker_active: false
+  ble_proxy_active: false
+  ble_proxy_connection_slots: 1 # Default is 3
+
+esp32_ble_tracker:
+  id: id_ble_tracker
+  software_coexistence: ${ble_tracker_software_coexistence}
+  scan_parameters:
+    continuous: ${ble_tracker_continous}
+
+    active: ${ble_tracker_active}  # send scan-request packets to gather more info, like device name for some devices.
+    interval: ${ble_tracker_interval}  # How long to spend on each advert channel
+    window:   ${ble_tracker_window}  # How long to actually "listen" in each interval. Reduce this if device is unstable.
+    # If the device cannot keep up or becomes unstable, reduce the "window" setting. This may be
+    # required if your device is controlling other sensors or doing PWM for lights etc.
+
+bluetooth_proxy:
+  id: id_ble_proxy
+  active: ${ble_proxy_active}  # allows outbound connections from HA to devices.
+  connection_slots: ${ble_proxy_connection_slots}

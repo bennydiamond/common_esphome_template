@@ -1,0 +1,44 @@
+external_components:
+  - source:
+      type: git
+      url: https://github.com/myhomeiot/esphome-components
+      ref: main
+    components: [ ble_gateway ]
+
+ble_gateway:
+  id: id_ble_gateway
+  on_ble_advertise:
+    then:
+      homeassistant.action:
+        action: ble_monitor.parse_data
+        data:
+          packet: !lambda return packet;
+
+binary_sensor:
+  - platform: homeassistant
+    id: id_bin_ble_gateway_discovery
+    entity_id: binary_sensor.ble_gateway
+    attribute: discovery
+    on_state:
+      then:
+        lambda: id(id_ble_gateway).set_discovery(x);
+
+text_sensor:
+  - platform: homeassistant
+    id: id_text_ble_gateway_devices
+    entity_id: binary_sensor.ble_gateway
+    attribute: devices
+    on_value:
+      then:
+        lambda: id(id_ble_gateway).set_devices(x);
+
+switch:
+  - platform: template
+    id: id_sw_ble_gateway_discovery
+    name: BLE Gateway Discovery
+    icon: mdi:bluetooth-connect
+    lambda: return id(id_ble_gateway).get_discovery();
+    turn_on_action: [lambda: id(id_ble_gateway).set_discovery(true);]
+    turn_off_action: [lambda: id(id_ble_gateway).set_discovery(false);]
+    disabled_by_default: true
+    entity_category: config
