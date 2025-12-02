@@ -4,6 +4,8 @@ substitutions:
   debug_toggle_switch_active_time_max: "24h"
   uart_logger_baud_rate: "0" # Disable UART logging by default
   default_syslog_server_ip: "192.168.0.15"
+  default_syslog_server_port: 514
+  syslog_log_level: DEBUG
   ntp_timezone: "America/Toronto"
   ntp_server_1: "192.168.0.3"
   ntp_server_2: "192.168.0.250"
@@ -35,9 +37,9 @@ syslog:
   id: id_syslog
   udp_id: id_udp_syslog_server
   time_id: id_sntp_time
-  port: 514
+  port: ${default_syslog_server_port}
   strip: true # remove color code
-  level: INFO
+  level: ${syslog_log_level}
 
 time:
   - platform: sntp
