@@ -10,7 +10,6 @@ substitutions:
   ntp_server_1: "192.168.0.3"
   ntp_server_2: "192.168.0.250"
   ntp_server_3: "0.pool.ntp.org"
-  api_reboot_timeout: 15min
 
 logger:
   id: id_logger
@@ -21,10 +20,6 @@ logger:
 ota:
   - platform: esphome
     id: id_ota
-
-api:
-  id: id_api
-  reboot_timeout: ${api_reboot_timeout}
 
 mdns:
   disabled: True
