@@ -76,6 +76,7 @@ sensor:
 
 text_sensor:
   - platform: wifi_info
+    id: id_sensor_wifi_info
     ssid:
       name: "WiFi SSID"
       id: id_text_wifi_ssid
